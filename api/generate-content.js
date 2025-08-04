@@ -1,13 +1,23 @@
 import fetch from 'node-fetch';
 
 export default async function handler(req, res) {
+  // Set CORS headers for all responses
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).send('Method Not Allowed');
   }
 
   const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
   const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
-
+  
   try {
     const { prompt } = req.body;
     const payload = {
